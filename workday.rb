@@ -1,4 +1,66 @@
+class DayType
+    attr_reader :is_holiday, :is_special_non_working, :is_restday
+  
+    def initialize(is_holiday, is_special_non_working, is_restday)
+      @is_holiday = is_holiday
+      @is_special_non_working = is_special_non_working
+      @is_restday = is_restday
+    end
+  end
+  
+  class RegularDay < DayType
+    def initialize
+      super(false, false, false)
+    end
+  end
+  
+  class RestDay < DayType
+    def initialize
+      super(false, false, true)
+    end
+  end
+  
+  class Holiday < DayType
+    def initialize
+      super(true, false, false)
+    end
+  end
+  
+  class SpecialNonWorkingDay < DayType
+    def initialize
+      super(false, true, false)
+    end
+  end
+  
+  class SpecialRestDay < DayType
+    def initialize
+      super(false, true, true)
+    end
+  end
+  
+  class HolidayRestDay < DayType
+    def initialize
+      super(true, false, true)
+    end
+  end
+  
+  class DayTypeFactory
+    def self.create(dayType)
+      case dayType
+      when 0 then RegularDay.new
+      when 1 then RestDay.new
+      when 2 then Holiday.new
+      when 3 then SpecialNonWorkingDay.new
+      when 4 then SpecialRestDay.new
+      when 5 then HolidayRestDay.new
+      else raise "Invalid day type"
+      end
+    end
+  end
+  
+  
 class Workday
+    attr_accessor :day_type
     #initializing attributes
     def initialize(dayType, timeIN, timeOUT, daily_salary, max_workHours)
         @is_restday = false
@@ -21,32 +83,7 @@ class Workday
 
     #this defines a dayType of a workday, parameters passed corresponds to number representing the type of day
     def define_dayType(dayType)
-        case dayType
-        when 0
-            @is_holiday = false
-            @is_special_non_working = false
-            @is_restday = false
-        when 1
-            @is_restday = true
-            @is_holiday = false
-            @is_special_non_working = false
-        when 2
-            @is_restday = false
-            @is_holiday = true
-            @is_special_non_working = false
-        when 3
-            @is_restday = false
-            @is_holiday = false
-            @is_special_non_working = true
-        when 4
-            @is_holiday = false
-            @is_restday = true
-            @is_special_non_working = true
-        when 5
-            @is_special_non_working = false
-            @is_restday = true
-            @is_holiday = true
-        end
+        @day_type = DayTypeFactory.create(dayType)
     end
 
     #calculates the total salary of a day of the worker
