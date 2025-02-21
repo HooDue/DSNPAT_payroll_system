@@ -2,8 +2,12 @@ class InputHandler
     # Gets the user’s main menu choice and validates it.
     def get_main_menu_choice
       print "Enter your choice: "
-      input = gets.chomp
-      validate_integer(input)
+      # input = gets
+      # if input.nil?
+      #   exit
+      # else
+      input = gets&.chomp
+      input ? validate_integer(input) : exit
     end
   
     # Gets the configuration menu choice.
