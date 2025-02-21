@@ -44,7 +44,7 @@ class PayrollSystem
       @workdays[i].define_dayType(WorkdayType::NORMAL)
     end
 
-    ((@num_workdays + 1)..7).each do |i|
+    ((@num_workdays)..7).each do |i|
       @workdays[i] = Workday.new(WorkdayType::REST, WorkdayConfig::TIME_IN, WorkdayConfig::TIME_OUT, WorkdayConfig::DAILY_SALARY, WorkdayConfig::MAX_WORK_HOURS)
       @workdays[i].define_dayType(WorkdayType::REST)
     end

@@ -37,7 +37,7 @@ end
 class RestDayPayStrategy < PayStrategy
   def calculate(workday)
     absent_value = check_absence(workday)
-    return absent_value unless absent_value.nil?
+    return absent_value + workday.daily_salary unless absent_value.nil?
 
     pay_rate = workday.daily_salary * 1.3
     pay_rate +

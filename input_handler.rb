@@ -1,23 +1,19 @@
 class InputHandler
-    # Gets the user’s main menu choice and validates it.
+    # gets the user’s main menu choice and validates it.
     def get_main_menu_choice
       print "Enter your choice: "
-      # input = gets
-      # if input.nil?
-      #   exit
-      # else
       input = gets&.chomp
       input ? validate_integer(input) : exit
     end
   
-    # Gets the configuration menu choice.
+    # gets the configuration menu choice.
     def get_config_menu_choice
       print "Enter your choice: "
       input = gets.chomp
       validate_integer(input)
     end
   
-    # General method to get an integer input within an optional valid range.
+    # general method to get an integer input within an optional valid range.
     def get_integer_input(prompt, valid_range = nil)
       loop do
         print prompt
@@ -31,12 +27,12 @@ class InputHandler
       end
     end
   
-    # Gets a day number (between 1 and 7).
+    # gets a day number (between 1 and 7).
     def get_day_number(prompt)
       get_integer_input(prompt, 1..7)
     end
   
-    # Gets a valid military time (e.g., 0900 or 1700).
+    # gets a valid military time (e.g., 0900 or 1700).
     def get_time_input(prompt)
       loop do
         print prompt
@@ -49,7 +45,7 @@ class InputHandler
       end
     end
   
-    # Gets a valid day type (1 through 6) from the user.
+    # gets a valid day type (1 through 6) from the user.
     def get_day_type(prompt)
       loop do
         puts prompt
@@ -72,12 +68,12 @@ class InputHandler
   
     private
   
-    # Attempts to convert input to an integer; returns -1 if conversion fails.
+    # attempts to convert input to an integer; returns -1 if conversion fails.
     def validate_integer(input)
       Integer(input) rescue -1
     end
   
-    # Validates a military time string. It must be 3–4 digits and the hour/minute parts must be within valid ranges.
+    # validates a military time string. It must be 3–4 digits and the hour/minute parts must be within valid ranges.
     def valid_time?(input)
       return false unless input =~ /^\d{3,4}$/
       time = input.to_i

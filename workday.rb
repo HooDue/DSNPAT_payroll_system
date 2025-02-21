@@ -39,21 +39,14 @@ class Workday
         when WorkdayType::NORMAL
           @pay_strategy = NormalDayPayStrategy.new
         when WorkdayType::REST
-          @is_restday = true
           @pay_strategy = RestDayPayStrategy.new
         when WorkdayType::REG_HOLIDAY
-          @is_holiday = true
           @pay_strategy = RegularHolidayPayStrategy.new
         when WorkdayType::SPECIAL_NW
-          @is_special_non_working = true
           @pay_strategy = SpecialNonWorkingDayPayStrategy.new
         when WorkdayType::REST_N_NW
-          @is_restday = true
-          @is_special_non_working = true
           @pay_strategy = RestDayAndSpecialNonWorkingDayPayStrategy.new
         when WorkdayType::REST_N_REGHOLIDAY
-          @is_holiday = true
-          @is_restday = true
           @pay_strategy = RegularHolidayRestDayPayStrategy.new
         else
           raise "Invalid day type for pay strategy"

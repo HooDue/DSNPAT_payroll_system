@@ -16,19 +16,19 @@ end
 
 class RestDay < DayType
   def initialize
-    super(false, false, true)
+    super(true, false, false)
   end
 end
 
 class Holiday < DayType
   def initialize
-    super(true, false, false)
+    super(false, true, false)
   end
 end
 
 class SpecialNonWorkingDay < DayType
   def initialize
-    super(false, true, false)
+    super(false, false, true)
   end
 end
 
@@ -40,7 +40,7 @@ end
 
 class HolidayRestDay < DayType
   def initialize
-    super(true, false, true)
+    super(false, true, true)
   end
 end
 
