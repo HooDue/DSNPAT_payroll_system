@@ -1,8 +1,20 @@
-# Define some constants used in initializing workdays
-DEFAULT_TI = 900
-DEFAULT_TO = 900
-DEFAULT_DAILY_SALARY = 500
-DEFAULT_MAX_WH = 8
+module WorkdayConfig
+  TIME_IN = 900
+  TIME_OUT = 900
+  DAILY_SALARY = 500
+  MAX_WORK_HOURS = 8
+  DEFAULT_WORKDAYS = 5
+  TOTAL_WORKDAYS = 8 #EXTRA 1 FOR 1 BASED INDEXING
+end
+
+module WorkdayType
+  NORMAL = 1
+  REST = 2
+  REG_HOLIDAY = 3
+  SPECIAL_NW = 4
+  REST_N_NW = 5
+  REST_N_REGHOLIDAY = 6
+end
 
 require_relative 'workday'
 require_relative 'salary_calculator'
@@ -12,10 +24,10 @@ require_relative 'input_handler'
 class PayrollSystem
   attr_accessor :workdays, :num_workdays
 
-  def initialize(num_workdays = 5)
+  def initialize(num_workdays = WorkdayConfig::DEFAULT_WORKDAYS)
     @num_workdays = num_workdays
     #for 1 based indexing days initialized to 8
-    @workdays = Array.new(8)
+    @workdays = Array.new(WorkdayConfig::TOTAL_WORKDAYS)
     init_days
 
     # Instantiate our helper classes.
@@ -28,13 +40,13 @@ class PayrollSystem
   # For the first @num_workdays we create normal workdays; the remaining days become rest days.
   def init_days
     (1..@num_workdays).each do |i|
-      @workdays[i] = Workday.new(1, DEFAULT_TI, DEFAULT_TO, DEFAULT_DAILY_SALARY, DEFAULT_MAX_WH)
-      @workdays[i].define_dayType(1)
+      @workdays[i] = Workday.new(WorkdayType::NORMAL, WorkdayConfig::TIME_IN, WorkdayConfig::TIME_OUT, WorkdayConfig::DAILY_SALARY, WorkdayConfig::MAX_WORK_HOURS)
+      @workdays[i].define_dayType(WorkdayType::NORMAL)
     end
 
     ((@num_workdays + 1)..7).each do |i|
-      @workdays[i] = Workday.new(2, DEFAULT_TI, DEFAULT_TO, DEFAULT_DAILY_SALARY, DEFAULT_MAX_WH)
-      @workdays[i].define_dayType(2)
+      @workdays[i] = Workday.new(WorkdayType::REST, WorkdayConfig::TIME_IN, WorkdayConfig::TIME_OUT, WorkdayConfig::DAILY_SALARY, WorkdayConfig::MAX_WORK_HOURS)
+      @workdays[i].define_dayType(WorkdayType::REST)
     end
   end
 
@@ -64,8 +76,8 @@ class PayrollSystem
     # For days with a rest day type and if time in equals time out, we assume a default day pay.
     (1..7).each do |i|
       wd = @workdays[i]
-      if wd.get_dayType == 1 && wd.get_timeIn == wd.get_timeOut
-        wd.set_dayPay(DEFAULT_DAILY_SALARY)
+      if wd.get_dayType == WorkdayType::NORMAL && wd.get_timeIn == wd.get_timeOut
+        wd.set_dayPay(WorkdayConfig::DAILY_SALARY)
       end
     end
 
@@ -78,7 +90,7 @@ class PayrollSystem
   def print_specific_day
     day_num = @input_handler.get_day_number("Enter day number to print (1-7): ")
     # index = day_num - 1
-    @display.display_day(day_num, @workdays[day_num])
+    @display.display_day(day_num, @workdays[day_num-1])
   end
 
   def edit_day
@@ -98,7 +110,7 @@ class PayrollSystem
     @workdays[day_num].calculate_Rate
 
     @display.show_message("Edit successful. New day info:")
-    @display.display_day(day_num, @workdays[day_num])
+    @display.display_day(day_num-1, @workdays[day_num])
   end
 
   def edit_config
