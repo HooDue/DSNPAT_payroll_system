@@ -1,66 +1,12 @@
-class DayType
-    attr_reader :is_holiday, :is_special_non_working, :is_restday
-  
-    def initialize(is_holiday, is_special_non_working, is_restday)
-      @is_holiday = is_holiday
-      @is_special_non_working = is_special_non_working
-      @is_restday = is_restday
-    end
-  end
-  
-  class RegularDay < DayType
-    def initialize
-      super(false, false, false)
-    end
-  end
-  
-  class RestDay < DayType
-    def initialize
-      super(false, false, true)
-    end
-  end
-  
-  class Holiday < DayType
-    def initialize
-      super(true, false, false)
-    end
-  end
-  
-  class SpecialNonWorkingDay < DayType
-    def initialize
-      super(false, true, false)
-    end
-  end
-  
-  class SpecialRestDay < DayType
-    def initialize
-      super(false, true, true)
-    end
-  end
-  
-  class HolidayRestDay < DayType
-    def initialize
-      super(true, false, true)
-    end
-  end
-  
-  class DayTypeFactory
-    def self.create(dayType)
-      case dayType
-      when 0 then RegularDay.new
-      when 1 then RestDay.new
-      when 2 then Holiday.new
-      when 3 then SpecialNonWorkingDay.new
-      when 4 then SpecialRestDay.new
-      when 5 then HolidayRestDay.new
-      else raise "Invalid day type"
-      end
-    end
-  end
-  
-  
+require_relative 'day_type_factory'
+require_relative 'pay_strategy'
+
 class Workday
-    attr_accessor :day_type
+    attr_accessor :day_type, :pay_strategy,
+                :daily_salary, :hourly_rate,
+                :overTime_day, :overTime_night,
+                :timeIN, :timeOUT, :nightshift_hours,
+                :is_restday, :is_holiday, :is_special_non_working, :is_absent
     #initializing attributes
     def initialize(dayType, timeIN, timeOUT, daily_salary, max_workHours)
         @is_restday = false
@@ -79,68 +25,43 @@ class Workday
         @timeIN = timeIN
         @timeOUT = timeOUT
         @dayType = dayType
+        define_dayType(dayType)
     end
 
     #this defines a dayType of a workday, parameters passed corresponds to number representing the type of day
     def define_dayType(dayType)
         @day_type = DayTypeFactory.create(dayType)
+        set_pay_strategy(dayType)
     end
 
-    #calculates the total salary of a day of the worker
-    def calculate_Rate()
-        #night rate
-        nightRate = @hourlyRate+(@hourlyRate*0.1)
-
-        #if time in and time out is same it means absent
-        if @timeIN == @timeOUT
-            @is_absent = true
+    def set_pay_strategy(dayType)
+        case dayType
+        when 0
+          @pay_strategy = NormalDayPayStrategy.new
+        when 1
+          @is_restday = true
+          @pay_strategy = RestDayPayStrategy.new
+        when 2
+          @is_holiday = true
+          @pay_strategy = RegularHolidayPayStrategy.new
+        when 3
+          @is_special_non_working = true
+          @pay_strategy = SpecialNonWorkingDayPayStrategy.new
+        when 4
+          @is_restday = true
+          @is_special_non_working = true
+          @pay_strategy = RestDayAndSpecialNonWorkingDayPayStrategy.new
+        when 5
+          @is_holiday = true
+          @is_restday = true
+          @pay_strategy = RegularHolidayRestDayPayStrategy.new
+        else
+          raise "Invalid day type for pay strategy"
         end
-        
-        #Normal day, but is absent
-        if (@is_absent && @is_restday==false)
-            @dayPay = 0.00;
-            
-        #Rest day, no work
-        elsif (@is_absent && @is_restday)
-            @dayPay = @daily_salary
-            
-        #Normal day
-        elsif (@is_holiday==false && @is_restday==false && @is_special_non_working==false)
-            # if time in is earlier than time out, means that the work is done dayshift and possibly has day or night overtime
-            if @timeIN < @timeOUT
-                @dayPay = @daily_salary + ((@hourlyRate*1.25)*@overTime_day) + ((@hourlyRate*1.375)*@overTime_night)
+    end
 
-            #if the time in is later than time out means that worker might works some time on dayshift but mainly works at nightshift
-            # OT is only at night
-            elsif @timeIN > @timeOUT
-                @dayPay = @daily_salary + ((@hourlyRate*1.10)*@nightshift_hours) +((@hourlyRate*1.375)*@overTime_night)
-            end
-
-        #Rest day
-        elsif (@is_holiday==false && @is_restday==true && @is_special_non_working==false)
-            payRate = (@daily_salary*1.3)
-                @dayPay = payRate + ((@hourlyRate*1.69)*@overTime_day) + ((@hourlyRate*1.859)*@overTime_night)
-                
-        #Special non working day
-        elsif (@is_holiday==false && @is_restday==false && @is_special_non_working)
-            payRate = (@daily_salary*1.3)
-            @dayPay = payRate + ((@hourlyRate*1.69)*@overTime_day)+ ((@hourlyRate*1.859)*@overTime_night)
-    
-        #Rest day and Special non working day
-        elsif (@is_holiday==false && @is_restday  && @is_special_non_working)
-            payRate = (@daily_salary*1.5)
-            @dayPay = payRate + ((@hourlyRate*1.95)*@overTime_day)+ ((@hourlyRate*2.145)*@overTime_night)
-
-        #Regular Holiday
-        elsif (@is_holiday && @is_restday==false  && @is_special_non_working==false)
-            payRate = @daily_salary*2
-            @dayPay = payRate + ((@hourlyRate*2.6)*@overTime_day)+ ((@hourlyRate*2.86)*@overTime_night)
-           
-        #Regular Holiday, rest day, day shift
-        elsif (@is_holiday && @is_restday  && @is_special_non_working==false)
-            payRate = @daily_salary*2.6
-            @dayPay = payRate + ((@hourlyRate*3.38)*@overTime_day)+ ((@hourlyRate*3.718)*@overTime_night)
-        end
+    def calculate_Rate
+        @dayPay = @pay_strategy.calculate(self)
     end
 
     #calculates the workhours and shift hours and OT hours
@@ -359,6 +280,21 @@ class Workday
 
     def set_dayPay(new_dayPay = 0)
         @dayPay = new_dayPay
+    end
+
+    # --- Added helper methods for the strategies ---
+    # Determines if the workday is considered absent.
+    def absent?
+        @timeIN == @timeOUT
+    end
+
+    # Returns whether this workday is a rest day.
+    def restday?
+        @is_restday
+    end
+    
+    def hourly_rate
+        @hourlyRate
     end
 end
 
