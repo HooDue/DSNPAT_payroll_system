@@ -14,7 +14,8 @@ class PayrollSystem
 
   def initialize(num_workdays = 5)
     @num_workdays = num_workdays
-    @workdays = Array.new(7)
+    #for 1 based indexing days initialized to 8
+    @workdays = Array.new(8)
     init_days
 
     # Instantiate our helper classes.
@@ -26,14 +27,14 @@ class PayrollSystem
   # Initialize the workdays for the week.
   # For the first @num_workdays we create normal workdays; the remaining days become rest days.
   def init_days
-    for i in 0...@num_workdays
-      @workdays[i] = Workday.new(0, DEFAULT_TI, DEFAULT_TO, DEFAULT_DAILY_SALARY, DEFAULT_MAX_WH)
-      @workdays[i].define_dayType(0)
-    end
-
-    for i in @num_workdays...7
+    (1..@num_workdays).each do |i|
       @workdays[i] = Workday.new(1, DEFAULT_TI, DEFAULT_TO, DEFAULT_DAILY_SALARY, DEFAULT_MAX_WH)
       @workdays[i].define_dayType(1)
+    end
+
+    ((@num_workdays + 1)..7).each do |i|
+      @workdays[i] = Workday.new(2, DEFAULT_TI, DEFAULT_TO, DEFAULT_DAILY_SALARY, DEFAULT_MAX_WH)
+      @workdays[i].define_dayType(2)
     end
   end
 
@@ -61,42 +62,43 @@ class PayrollSystem
 
   def print_all_days
     # For days with a rest day type and if time in equals time out, we assume a default day pay.
-    @workdays.each do |wd|
+    (1..7).each do |i|
+      wd = @workdays[i]
       if wd.get_dayType == 1 && wd.get_timeIn == wd.get_timeOut
         wd.set_dayPay(DEFAULT_DAILY_SALARY)
       end
     end
 
     # Let SalaryCalculator gather weekly figures.
-    weekly_summary = @salary_calculator.calculate_weekly_summary(@workdays)
+    weekly_summary = @salary_calculator.calculate_weekly_summary(@workdays[1..7])
     @display.display_weekly_summary(weekly_summary)
-    @display.display_all_days(@workdays)
+    @display.display_all_days(@workdays[1..7])
   end
 
   def print_specific_day
     day_num = @input_handler.get_day_number("Enter day number to print (1-7): ")
-    index = day_num - 1
-    @display.display_day(index, @workdays[index])
+    # index = day_num - 1
+    @display.display_day(day_num, @workdays[day_num])
   end
 
   def edit_day
     day_num = @input_handler.get_day_number("Enter day number to edit (1-7): ")
-    index = day_num - 1
+    # index = day_num - 1
 
     new_time_in = @input_handler.get_time_input("Enter time in (in military time, e.g., 0900): ")
     new_time_out = @input_handler.get_time_input("Enter time out (in military time, e.g., 1700): ")
 
-    @workdays[index].set_timeIn(new_time_in)
-    @workdays[index].set_timeOut(new_time_out)
+    @workdays[day_num].set_timeIn(new_time_in)
+    @workdays[day_num].set_timeOut(new_time_out)
 
     new_day_type = @input_handler.get_day_type("Enter new day type:")
-    @workdays[index].set_dayType(new_day_type)
-    @workdays[index].define_dayType(new_day_type)
-    @workdays[index].calculate_shift_time
-    @workdays[index].calculate_Rate
+    @workdays[day_num].set_dayType(new_day_type)
+    @workdays[day_num].define_dayType(new_day_type)
+    @workdays[day_num].calculate_shift_time
+    @workdays[day_num].calculate_Rate
 
     @display.show_message("Edit successful. New day info:")
-    @display.display_day(index, @workdays[index])
+    @display.display_day(day_num, @workdays[day_num])
   end
 
   def edit_config

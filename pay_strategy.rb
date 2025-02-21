@@ -15,7 +15,7 @@ class PayStrategy
   end
 end
 
-# Strategy for a Normal Day (day type 0):
+# Strategy for a Normal Day (day type 1):
 class NormalDayPayStrategy < PayStrategy
   def calculate(workday)
     absent_value = check_absence(workday)
@@ -33,7 +33,7 @@ class NormalDayPayStrategy < PayStrategy
   end
 end
 
-# Strategy for a Rest Day (day type 1):
+# Strategy for a Rest Day (day type 2):
 class RestDayPayStrategy < PayStrategy
   def calculate(workday)
     absent_value = check_absence(workday)
@@ -46,7 +46,7 @@ class RestDayPayStrategy < PayStrategy
   end
 end
 
-# Strategy for a Regular Holiday (day type 2):
+# Strategy for a Regular Holiday (day type 3):
 class RegularHolidayPayStrategy < PayStrategy
   def calculate(workday)
     absent_value = check_absence(workday)
@@ -59,7 +59,7 @@ class RegularHolidayPayStrategy < PayStrategy
   end
 end
 
-# Strategy for a Special Non Working Day (day type 3):
+# Strategy for a Special Non Working Day (day type 4):
 class SpecialNonWorkingDayPayStrategy < PayStrategy
   def calculate(workday)
     absent_value = check_absence(workday)
@@ -72,7 +72,7 @@ class SpecialNonWorkingDayPayStrategy < PayStrategy
   end
 end
 
-# Strategy for a Rest Day and Special Non Working Day (day type 4):
+# Strategy for a Rest Day and Special Non Working Day (day type 5):
 class RestDayAndSpecialNonWorkingDayPayStrategy < PayStrategy
   def calculate(workday)
     absent_value = check_absence(workday)
@@ -85,7 +85,7 @@ class RestDayAndSpecialNonWorkingDayPayStrategy < PayStrategy
   end
 end
 
-# Strategy for a Regular Holiday that is also a Rest Day (day type 5):
+# Strategy for a Regular Holiday that is also a Rest Day (day type 6):
 class RegularHolidayRestDayPayStrategy < PayStrategy
   def calculate(workday)
     absent_value = check_absence(workday)

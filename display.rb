@@ -49,12 +49,12 @@ class Display
   
     def print_day_type(day_type)
       case day_type
-      when 0 then puts "Day type: Normal day"
-      when 1 then puts "Day type: Rest day"
-      when 2 then puts "Day type: Regular Holiday"
-      when 3 then puts "Day type: Special non working day"
-      when 4 then puts "Day type: Rest day and Special non working day"
-      when 5 then puts "Day type: Rest day and Regular Holiday"
+      when 1 then puts "Day type: Normal day"
+      when 2 then puts "Day type: Rest day"
+      when 3 then puts "Day type: Regular Holiday"
+      when 4 then puts "Day type: Special non working day"
+      when 5 then puts "Day type: Rest day and Special non working day"
+      when 6 then puts "Day type: Rest day and Regular Holiday"
       else puts "Day type: Unknown"
       end
     end

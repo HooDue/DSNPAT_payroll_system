@@ -47,12 +47,12 @@ end
 class DayTypeFactory
   def self.create(dayType)
     case dayType
-    when 0 then RegularDay.new
-    when 1 then RestDay.new
-    when 2 then Holiday.new
-    when 3 then SpecialNonWorkingDay.new
-    when 4 then SpecialRestDay.new
-    when 5 then HolidayRestDay.new
+    when 1 then RegularDay.new
+    when 2 then RestDay.new
+    when 3 then Holiday.new
+    when 4 then SpecialNonWorkingDay.new
+    when 5 then SpecialRestDay.new
+    when 6 then HolidayRestDay.new
     else raise "Invalid day type"
     end
   end

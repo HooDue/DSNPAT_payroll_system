@@ -36,22 +36,22 @@ class Workday
 
     def set_pay_strategy(dayType)
         case dayType
-        when 0
-          @pay_strategy = NormalDayPayStrategy.new
         when 1
+          @pay_strategy = NormalDayPayStrategy.new
+        when 2
           @is_restday = true
           @pay_strategy = RestDayPayStrategy.new
-        when 2
+        when 3
           @is_holiday = true
           @pay_strategy = RegularHolidayPayStrategy.new
-        when 3
+        when 4
           @is_special_non_working = true
           @pay_strategy = SpecialNonWorkingDayPayStrategy.new
-        when 4
+        when 5
           @is_restday = true
           @is_special_non_working = true
           @pay_strategy = RestDayAndSpecialNonWorkingDayPayStrategy.new
-        when 5
+        when 6
           @is_holiday = true
           @is_restday = true
           @pay_strategy = RegularHolidayRestDayPayStrategy.new

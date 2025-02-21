@@ -49,20 +49,20 @@ class InputHandler
       end
     end
   
-    # Gets a valid day type (0 through 5) from the user.
+    # Gets a valid day type (1 through 6) from the user.
     def get_day_type(prompt)
       loop do
         puts prompt
-        puts "[0] Normal day"
-        puts "[1] Rest day"
-        puts "[2] Regular Holiday"
-        puts "[3] Special non working day"
-        puts "[4] Rest day and Special non working day"
-        puts "[5] Rest day and Regular Holiday"
+        puts "[1] Normal day"
+        puts "[2] Rest day"
+        puts "[3] Regular Holiday"
+        puts "[4] Special non working day"
+        puts "[5] Rest day and Special non working day"
+        puts "[6] Rest day and Regular Holiday"
         print "Enter your choice: "
         input = gets.chomp
         num = validate_integer(input)
-        if (0..5).include?(num)
+        if (1..6).include?(num)
           return num
         else
           puts "Invalid day type. Please choose a value between 0 and 5."
